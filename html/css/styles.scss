@@ -1,0 +1,39 @@
+$mycolor-dark: #c2c2c2;
+
+body {
+    background-color: $mycolor-dark;
+}
+
+input {
+    text-align: left;
+    padding: 5px;
+    font-size: 1.2em;
+    width: 70%;
+}
+
+.todo-list {
+    list-style-type: none;
+
+    li {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 1rem;
+        cursor: pointer;
+
+        div {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .completed {
+            text-decoration: line-through;
+        }
+
+        button {
+            margin-left: 2rem;
+            background-color: white;
+            border: 1px solid black;
+        }
+    }
+}
