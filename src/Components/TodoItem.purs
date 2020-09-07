@@ -41,31 +41,40 @@ component = Hooks.component comp
     Hooks.pure do
         case editing of 
             Nothing ->
-                H.div_
-                    [ H.input
-                        [ Attr.type_ InputCheckbox
-                        , Attr.checked todo.item.completed
-                        , Ev.onClick onClickHandler
+                H.li_
+                    [ H.div
+                        [ Attr.class_ (ClassName "view")]
+                        [ H.input
+                            [ Attr.class_ (ClassName "toggle") 
+                            , Attr.type_ InputCheckbox
+                            , Attr.checked todo.item.completed
+                            , Ev.onClick onClickHandler
+                            ]
+                        , H.label
+                            [ Ev.onDoubleClick (onDoubleClickHandler editingId)
+                            , Attr.classes (if todo.item.completed then [ ClassName "completed"] else [])
+                            ]
+                            [ H.text todo.item.text ]
+                        , H.button 
+                            [ Attr.class_ (ClassName "destroy")
+                            , Ev.onClick onClickRemoveHandler 
+                            ]
+                            []
                         ]
-                    , H.span
-                        [ Ev.onDoubleClick (onDoubleClickHandler editingId)
-                        , Attr.classes (if todo.item.completed then [ ClassName "completed"] else [])
-                        ]
-                        [ H.text todo.item.text ]
-                    , H.button 
-                        [ Ev.onClick onClickRemoveHandler ]
-                        [ H.text "remove" ]
                     ]
             Just txt -> 
-                H.form 
-                    [ Ev.onSubmit (onEditingDone txt editingId) ]
-                    [
-                      H.input
-                        [ Attr.value txt 
-                        , Attr.autofocus true
-                        , Attr.ref inputRef
-                        , Ev.onValueInput (\newTxt -> Just $ Hooks.put editingId (Just newTxt))
-                        , Ev.onBlur (leaveInputField editingId)
+                H.li
+                    [ Attr.class_ (ClassName "editing") ]
+                    [ H.form 
+                        [ Ev.onSubmit (onEditingDone txt editingId) ]
+                        [ H.input
+                            [ Attr.class_ (ClassName "edit") 
+                            , Attr.value txt 
+                            , Attr.autofocus true
+                            , Attr.ref inputRef
+                            , Ev.onValueInput (\newTxt -> Just $ Hooks.put editingId (Just newTxt))
+                            , Ev.onBlur (leaveInputField editingId)
+                            ]
                         ]
                     ]
     where

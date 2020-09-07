@@ -14,5 +14,8 @@
     "purescript": "^0.13.8",
     "sass": "^1.26.10",
     "spago": "^0.16.0"
+  },
+  "dependencies": {
+    "todomvc-app-css": "^2.3.0"
   }
 }

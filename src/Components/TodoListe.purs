@@ -13,6 +13,7 @@ import Halogen (ClassName(..), Component, Slot, liftEffect)
 import Halogen.HTML (HTML)
 import Halogen.HTML as H
 import Halogen.HTML.Events as Ev
+import Halogen.HTML.Properties (InputType(..))
 import Halogen.HTML.Properties as Attr
 import Halogen.Hooks (HookM)
 import Halogen.Hooks as Hooks
@@ -37,16 +38,36 @@ component = Hooks.component \{ slotToken } _ -> Hooks.do
   Hooks.pure $ view { todos, todosId, newTodoText, newTodoTextId } 
   where
     view states = do
-        H.div_
-            [ viewInput
-            , viewTodoList
+        H.section
+            [ Attr.class_ (ClassName "todoapp") ]
+            [ H.header
+                [ Attr.class_ (ClassName "header") ]
+                [ H.h1_ [ H.text "todos" ]
+                , viewInput
+                ]
+            , H.section
+                [ Attr.class_ (ClassName "main") ]
+                [ H.input
+                    [ Attr.class_ (ClassName "toggle-all")
+                    , Attr.id_ "toggle-all"
+                    , Attr.type_ InputCheckbox
+                    ]
+                , H.label
+                    [ Attr.for "toggle-all"
+                    ]
+                    [ H.text "Mark all as complete" ]
+                , viewTodoList 
+                ]
+            , viewFooter
             ]
         where
         viewInput = 
             H.form
-                [ Ev.onSubmit handleNewTodoSubmit ]
+                [ Attr.class_ (ClassName "new-todo-form") 
+                , Ev.onSubmit handleNewTodoSubmit ]
                 [ H.input
-                    [ Attr.placeholder "new todo..."
+                    [ Attr.class_ (ClassName "new-todo")
+                    , Attr.placeholder "new todo..."
                     , Attr.value states.newTodoText
                     , Ev.onValueInput handleNewTodoTextChanged
                     ]
@@ -55,11 +76,40 @@ component = Hooks.component \{ slotToken } _ -> Hooks.do
             H.ul
                 [ Attr.class_ (ClassName "todo-list") ]
                 (map viewTodoItem $ Todo.items states.todos)
+        viewFooter =
+            H.footer
+                [ Attr.class_ (ClassName "footer") ]
+                [ H.span
+                    [ Attr.class_ (ClassName "todo-count") ]
+                    [ H.strong_ [ H.text "0"]
+                    , H.text " item left"
+                    ]
+                , H.ul
+                    [ Attr.class_ (ClassName "filters") ]
+                    [ H.li_
+                        [ H.a
+                            [ Attr.class_ (ClassName "selected") 
+                            , Attr.href "/"
+                            ]
+                            [ H.text "All" ]
+                        ]
+                    , H.li_
+                        [ H.a
+                            [ Attr.href "/active"
+                            ]
+                            [ H.text "Active" ]
+                        ]
+                    , H.li_
+                        [ H.a
+                            [ Attr.href "/completed"
+                            ]
+                            [ H.text "Completed" ]
+                        ]
+                    ]
+                ]
         viewTodoItem :: { index :: Index, item :: Todo } -> _
         viewTodoItem todo =
-            H.li_
-                [ H.slot _items todo.index TodoItem.component todo handleTodoItemOutput
-                ]
+            H.slot _items todo.index TodoItem.component todo handleTodoItemOutput
         handleNewTodoSubmit :: Event -> Maybe (HookM m Unit)
         handleNewTodoSubmit ev = Just $ do
             liftEffect $ preventDefault ev
