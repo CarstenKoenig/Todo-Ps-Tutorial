@@ -3,6 +3,7 @@ module Models.Todo
     , Index
     , List
     , toggleCompleted
+    , toggleAll
     , emptyList
     , insert
     , update
@@ -18,6 +19,7 @@ import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (class Newtype, over)
 import Data.Tuple (Tuple(..))
 import Data.Unfoldable (class Unfoldable)
+import Data.Foldable (any)
 
 
 type Todo =
@@ -57,3 +59,11 @@ delete index =
 items :: forall f. Functor f => Unfoldable f => List -> f { index :: Index, item :: Todo }
 items (List todos) = 
     map (\(Tuple index item) -> { index, item }) $ Map.toUnfoldable todos
+
+toggleAll :: List -> List
+toggleAll (List todos) = 
+    List (map setCompleted todos)
+    where
+    setCompleted :: Todo -> Todo
+    setCompleted = _ { completed = anyActiveTodosLeft }
+    anyActiveTodosLeft = any (not <<< _.completed) todos
